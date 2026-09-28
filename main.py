@@ -75,7 +75,7 @@ def pwned_api(password):
     return 0
 
 
-def command_line():
+def command_line(): #the command line interface you interact with (no gui)
     while True:
         first_line = input('input "s" to test the strength of the password or enter "l" to check if your password has been leaked ')
 
