@@ -6,8 +6,8 @@
 * **-Estimates the time it would take the password to be cracked**
 * **-More will be added soon**
 
-##Security
+## Security
 The full password never gets sent to the haveibeenpwned API. Instead, it is first hashed and then the first 5 characters are sent, and then when a list is returned, the program goes through the list locally and checks if any match the full password (the hash suffix).
 
-#Instillation
+## Instillation
 The "requests" library needs to be downloaded before using the program: "pip install requests" in the command line
