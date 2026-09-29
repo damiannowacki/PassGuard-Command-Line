@@ -46,7 +46,7 @@ def password_strength(password, pool_size):
         return 0
     
     length = len(password)
-    strength = round(length * math.log2(pool_size), 2) #standard formula for calculating the password strength
+    strength = round(length * math.log2(pool_size), 2) #standard formula for calculating the password strength, not my original formula
     return strength
 
 
@@ -74,23 +74,71 @@ def pwned_api(password):
             return int(count) 
     return 0
 
+def crack_time_estimator(strength):
+    if strength > 100: #above a strength of 100 the result would be a lot of centuries, so i figured 100 is a good cap to keep the command line clean
+        return "z"
+    
+    crack_time_seconds = (2 ** (strength - 1)) / 100_000_000_000 #standard formula for calculating cracktime, not my original formula
+
+    crack_time_minutes = crack_time_seconds / 60
+    crack_time_hours = crack_time_seconds / 3600
+    crack_time_days = crack_time_seconds / 86400
+    crack_time_weeks = crack_time_seconds / 604_800
+    crack_time_months = crack_time_seconds / 2_629_746 #average because different months have different amount of days in them, therefore different amount of seconds
+    crack_time_years = crack_time_seconds / 31_557_600
+    crack_time_decades = crack_time_seconds / 315_569_520
+    crack_time_centuries = crack_time_seconds / 3_153_600_000
+
+    if crack_time_centuries > 1:
+        return f"{int(crack_time_centuries)} Centuries"
+    elif crack_time_decades > 1:
+        return f"{int(crack_time_decades)} Decades"
+    elif crack_time_years > 1:
+        return f"{int(crack_time_years)} Years"
+    elif crack_time_months > 1:
+        return f"{int(crack_time_months)} Months"
+    elif crack_time_weeks > 1:
+        return f"{int(crack_time_weeks)} Weeks"
+    elif crack_time_days > 1:
+        return f"{int(crack_time_days)} Days"
+    elif crack_time_hours > 1:
+        return f"{int(crack_time_hours)} Hours"
+    elif crack_time_minutes > 1:
+        return f"{int(crack_time_minutes)} Minutes"
+    elif crack_time_seconds > 1:
+        return f"{int(crack_time_seconds)} Seconds"
+    else:
+        return "0 Seconds"
+    
 
 def command_line(): #the command line interface you interact with (no gui)
     while True:
-        first_line = input('input "s" to test the strength of the password or enter "l" to check if your password has been leaked ')
+        first_line = input('enter "s" to test the strength of the password, enter "c" to find out the time it would take to crack your password, or enter "l" to check if your password has been leaked ')
 
         if first_line.lower() == "s":
             input_password1 = input("Please Enter A Password ")
             print(f"Your Password Strength Is {password_strength(input_password1, calculate_pool_size(input_password1))}")
-        elif first_line.lower() == "l":
+
+        elif first_line.lower() == "c":
             input_password2 = input("Please Enter A Password ")
-            breach_count = pwned_api(input_password2)
+            pass_strength = password_strength(input_password2, calculate_pool_size(input_password2))
+            crack_time = crack_time_estimator(pass_strength)
+        
+            if crack_time == "z":
+                print("Damn. That Password Is Almost Uncrackable, In Fact It Would Take Over 1 Trillion Centuries To Crack!")
+            else:
+                print(f"It Would Take {crack_time} To Crack Your Password")
+
+        elif first_line.lower() == "l":
+            input_password3 = input("Please Enter A Password ")
+            breach_count = pwned_api(input_password3)
             if breach_count == 0:
                 print("Good News! This Password Has Not Been Found In Known Data Breaches")
             else:
                 print(f"Warning! This Password Has Been Found in {breach_count:,} Data Breaches")
+
         else:
-            print('Please Enter etiher a "s" or a "l" ')
+            print('Please Enter etiher "s", "c" or "l" ')
             continue
 
         while True:
@@ -104,3 +152,10 @@ def command_line(): #the command line interface you interact with (no gui)
 
 if __name__ == "__main__":
     command_line()
+
+
+#Coming soon:
+#Add a colour-based reply along with the password strength
+#Add password recommendations for the user's inputed password
+#Check a password for common patterns
+#A secure password genrator, customised to the user's requests 
