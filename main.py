@@ -102,4 +102,5 @@ def command_line(): #the command line interface you interact with (no gui)
             else:
                 print("Please Enter A Suitable Answer")
 
-command_line()
+if __name__ == "__main__":
+    command_line()
